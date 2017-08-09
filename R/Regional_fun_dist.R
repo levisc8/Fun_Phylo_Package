@@ -22,7 +22,7 @@
 
 make_regional_trait_dist <- function(trait.data, traits){
   
-  ktab <- make_regional_traits_ktab(trait.data, traits)
+  ktab <- make_regional_trait_ktab(trait.data, traits)
   
   out <- ade4::dist.ktab(ktab$KTab, type = ktab$VarTypes,
                          option = 'scaledBYrange')
