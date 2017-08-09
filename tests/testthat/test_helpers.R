@@ -9,7 +9,7 @@ data('tyson')
 
 communities <- tyson$communities
 phylo <- tyson$phylo
-tyson <- tyson$spp.list
+spp.list <- tyson$spp.list
 demog <- tyson$demo.data
 trait.tyson <- tyson$traits
 

@@ -61,6 +61,7 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
     stop('The developer is dumb and has made a mistake.\n',
          'Email a reproducible example to levisc8@gmail.com')
   }
+  
   fpd <- func_phy_dist(FDist = as.matrix(fun.mat),
                        PDist = as.matrix(phylo.mat),
                        phyloWeight = a, p = p)
