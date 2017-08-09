@@ -1,0 +1,23 @@
+#' Tyson Research Center data set
+#' 
+#' A list containing a full demographic, functional trait, and phylogenetic
+#' data set for 14 invasive plant species at Tyson Research Center.
+#' 
+#' @format A list with 5 slots
+#' \describe{
+#'   \item{\code{communities}}{A \code{data.frame} containing information
+#'   on the local community composition and abundances for all plots for 
+#'   each invasive species studied.}
+#'   \item{\code{traits}}{A functional trait \code{data.frame} that includes continuous,
+#'   circular, and binary traits for 117 species at Tyson Research Center. See
+#'   \emph{Levin et al 2017} for more details on these traits.}
+#'   \item{\code{phylo}}{A phylogeny for 554 vascular dicot species at Tyson
+#'   Research Center. Data is in the \code{phylo format}, see documentation
+#'   for \code{\link[ape]{phylo}}.}
+#'   \item{\code{spp.list}}{A \code{data.frame} that contains the species list
+#'   used to make the phylogeny housed in \code{phylo}.}
+#'   \item{\code{demo.data}}{A \code{data.frame} containing information on
+#'   demographic responses and covariates for 14 focal exotic species at 
+#'   Tyson Research Center.}
+#' }
+"tyson"
