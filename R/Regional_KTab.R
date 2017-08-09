@@ -1,10 +1,22 @@
 #' Make a KTab for a whole data set
 #' 
-#' @description This is very similar to 
-#' \code{make_local_traits_ktab}, but does not subset the data
-#' by default. 
+#' @description A wrapper around functions from \code{ade4} to create
+#' the specialized data structure known as a \code{ktab}. These
+#' are used in subsequent functions to calculate a generalized
+#' Gower distance based on the methods of Pavoine et al 2009.
 #' 
-#' @inheritParams make_local_traits_ktab
+#' @inheritParams make_local_trait_ktab
+#' 
+#' @details \code{ade4} provides many useful functions for calculating
+#' trait based distances. The aim of this particular function is to create
+#' an easy-to-automate version of these for use in stepwise model selection
+#' procedures which can handle odd boundary cases not necessarily forseen
+#' in previous implementations. This particular function makes it easy
+#' to loop across a variety of traits without having to stop and figure 
+#' out which type of variable each particular portion of the \code{ktab}
+#' is. The \code{VarType} output is designed to seamlessly integrate
+#' with \code{dist.ktab}'s \code{type} argument to allow for effortless
+#' integration.
 #' 
 #' @return A list consisting of 
 #' \itemize{
@@ -14,11 +26,15 @@
 #'    \code{dist.ktab}}
 #' }
 #' 
+#' @note The output from this function is designed to be passed directly to
+#' \code{make_regional_trait_dist}. 
+#' 
+#' @seealso \code{\link{make_regional_trait_dist}}, \code{\link{make_local_trait_ktab}}
 #' @author Sam Levin
 #' @importFrom ade4 prep.binary prep.circular ktab.list.df
 #' @export
 #' 
-make_regional_traits_ktab <- function(trait.data, traits){
+make_regional_trait_ktab <- function(trait.data, traits){
 
   ContTraitNames <- c('SLA','Tough','WoodDens','Height')
 

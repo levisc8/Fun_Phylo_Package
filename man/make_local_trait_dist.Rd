@@ -29,7 +29,7 @@ in \code{trait.data}. An effect method of subsetting this is to simply call
 \item{scale}{The spatial scale at which to analyze the data}
 }
 \value{
-A distance matrix of class \code{dist}.
+An object of class \code{dist}.
 }
 \description{
 Creates a Gower distance matrix using the method
@@ -39,6 +39,9 @@ of Pavoine et al 2009 to handle many types of data
 These
 can easily be coerced to other data structures, but must
 be coerced to a \code{matrix} first.
+}
+\seealso{
+\code{\link{make_regional_trait_dist}}, \code{\link{make_local_trait_ktab}}
 }
 \author{
 Sam Levin

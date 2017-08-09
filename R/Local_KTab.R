@@ -32,14 +32,21 @@
 #'    \code{dist.ktab}}
 #' }
 #' 
+#' @note The output from this function is designed to be passed directly to
+#' \code{make_local_trait_dist}. 
+#' 
+#' @seealso \code{\link{make_local_trait_dist}}, \code{\link{make_regional_trait_ktab}}
+#' 
 #' @author Sam Levin
+#' 
 #' @importFrom magrittr %>%
 #' @importFrom dplyr filter
 #' @importFrom ade4 prep.circular prep.binary ktab.list.df
+#' 
 #' @export
 #' 
 
-make_local_traits_ktab <- function(focal.species,community.data,
+make_local_trait_ktab <- function(focal.species,community.data,
                                    trait.data, traits){
 
   WoodyTraitNames <- c('SLA','Tough','WoodDens')

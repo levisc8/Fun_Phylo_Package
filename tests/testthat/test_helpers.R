@@ -11,7 +11,7 @@ communities <- tyson$communities
 phylo <- tyson$phylo
 spp.list <- tyson$spp.list
 demog <- tyson$demo.data
-trait.tyson <- tyson$traits
+trait.data <- tyson$traits
 
 traits <- names(trait.data[-1])
 # test trait ktab functions
@@ -31,6 +31,7 @@ for(i in 1:10){
 
 
 # test rarefying functions
+traits <- c('Height')
 
 for(x in unique(demog$Species)){
   phylo.mat <- make_local_phylo_dist(x, communities, phylo)
