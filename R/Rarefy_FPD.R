@@ -19,16 +19,30 @@
 #' functional-phylogenetic distances
 #' @param p The power to raise each distance value to in the functional-
 #' phylogenetic distance calculation
+#' @param abundance.weighted A logical value indicating whether or not to 
+#' weight species by their relative abundances
+#' @inheritParams make_local_trait_dist
 #' 
+#' @return A list with 4 components
+#' \itemize{
+#' \item{\code{rare.mpd}}{Rarefied MPD value for the species in the community}
+#' \item{\code{sample.mpd}}{The values from each iteration of the sampling}
+#' \item{\code{rare.nnd}}{Rarefied NND values for the species in the community}
+#' \item{\code{sample.nnd}}{The values from each iteration of the sampling}#' 
+#' }
+#' 
+#'
 #' @author Sam Levin
 #' 
 #' @importFrom magrittr %>%
+#' @importFrom dplyr filter
 #' @export
 #' 
 rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
                        metric = c("MPD", "NND"),
                        n.resamp = 1000, n.rare, 
-                       a, p) {
+                       a, p, abundance.weighted = FALSE,
+                       community.data = NULL) {
   
   mpd.tf <- "MPD" %in% metric
   nnd.tf <- "NND" %in% metric
@@ -75,17 +89,46 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
 
   diag(fpd) <- NA
   focal.column <- fpd[ ,focal.species]
-
+  focal.pos <- which(rownames(fpd) == focal.species)
+  
   for(i in 1:n.resamp){
     resamp.x <- base::sample(1:length(focal.column),
                              size = n.rare,
                              replace = FALSE)
-
-    if(mpd.tf) {
-      rare.mpd[i] <- mean(focal.column[resamp.x], na.rm = TRUE)
-    }
-    if(nnd.tf){
-      rare.bl[i] <- min(focal.column[resamp.x], na.rm = TRUE)
+    
+       
+    if(abundance.weighted){
+      if(!focal.pos %in% resamp.x){
+        resamp.x <- c(resamp.x[-1], focal.pos)
+      }
+      abundance.data <- dplyr::filter(community.data, 
+                                      exotic_species == focal.species) %>%
+                        .[.$community %in% rownames(fpd), ] %>% .[, 2:3]
+      
+      if(mpd.tf) {
+        rare.mpd[i] <- AW_calc(focal.species,
+                               abundance.data[resamp.x, ], 
+                               fpd.mat = data.frame(focal.column[resamp.x]), 
+                               metric = 'MPD',
+                               na.rm = TRUE)
+      }
+      if(nnd.tf){
+        rare.bl[i] <- AW_calc(focal.species,
+                              abundance.data[resamp.x], 
+                              fpd.mat = data.frame(fpd[resamp.x, resamp.x]), 
+                              metric = 'NND',
+                              na.rm = TRUE)
+      }
+      
+      
+    } else { 
+      
+      if(mpd.tf) {
+        rare.mpd[i] <- mean(focal.column[resamp.x], na.rm = TRUE)
+      }
+      if(nnd.tf){
+        rare.bl[i] <- min(focal.column[resamp.x], na.rm = TRUE)
+      }
     }
   }
 

@@ -5,7 +5,8 @@
 \title{Rarefied Function-Phylogenetic Distances}
 \usage{
 rarefy_FPD(focal.species, phylo.mat, fun.mat, metric = c("MPD", "NND"),
-  n.resamp = 1000, n.rare, a, p)
+  n.resamp = 1000, n.rare, a, p, abundance.weighted = FALSE,
+  community.data = NULL)
 }
 \arguments{
 \item{focal.species}{The name of the focal species in the 
@@ -29,6 +30,25 @@ functional-phylogenetic distances}
 
 \item{p}{The power to raise each distance value to in the functional-
 phylogenetic distance calculation}
+
+\item{abundance.weighted}{A logical value indicating whether or not to 
+weight species by their relative abundances}
+
+\item{community.data}{The community data file. Each observation
+of a species in a community should be its own row. For now,
+the column specifiy which community is which is called 
+\code{exotic_species}, but this will be generalized later
+using an argument to specifiy which column marks community 
+separators and which column holds the actual species names}
+}
+\value{
+A list with 4 components
+\itemize{
+\item{\code{rare.mpd}}{Rarefied MPD value for the species in the community}
+\item{\code{sample.mpd}}{The values from each iteration of the sampling}
+\item{\code{rare.nnd}}{Rarefied NND values for the species in the community}
+\item{\code{sample.nnd}}{The values from each iteration of the sampling}#' 
+}
 }
 \description{
 \code{rare_FPD} resamples a phylogenetic and functional distance matrix

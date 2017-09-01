@@ -3,3 +3,4 @@
 ^\.travis\.yml$
 ^\.gitignore$
 ^README\.html$
+^MPD_Picante\.R$

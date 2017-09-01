@@ -35,7 +35,7 @@ func_phy_dist <- function (FDist, PDist, phyloWeight, p, ...)
   if(any(is.na(FDist)) | any(is.na(PDist))){
     FDist[is.na(FDist)] <- mean(FDist, na.rm = T)
     PDist[is.na(PDist)] <- mean(PDist, na.rm = T)
-    warning('NAs/NaNs detected in distance matrix. Values are being\n,',
+    warning('NAs/NaNs detected in distance matrix. Values are being filled in\n,',
             'by matrix level mean values. Check data if this is problematic.')
   }
   FDist <- FDist/max(FDist)
