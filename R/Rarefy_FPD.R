@@ -114,7 +114,7 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
       }
       if(nnd.tf){
         rare.bl[i] <- AW_calc(focal.species,
-                              abundance.data[resamp.x], 
+                              abundance.data[resamp.x, ], 
                               fpd.mat = data.frame(fpd[resamp.x, resamp.x]), 
                               metric = 'NND',
                               na.rm = TRUE)

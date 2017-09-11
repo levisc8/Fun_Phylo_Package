@@ -31,5 +31,5 @@ weighted.min <- function (x, w, na.rm = FALSE)
     w <- w[i]
     x <- x[i]
   }
-  min(((x * w)[w != 0])/sum(w, na.rm = na.rm), na.rm = na.rm)
+  min(((x * w)[w != 0])/sum(w))
 }
