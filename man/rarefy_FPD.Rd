@@ -6,7 +6,7 @@
 \usage{
 rarefy_FPD(focal.species, phylo.mat, fun.mat, metric = c("MPD", "NND"),
   n.resamp = 1000, n.rare, a, p, abundance.weighted = FALSE,
-  community.data = NULL, log = TRUE)
+  community.data = NULL)
 }
 \arguments{
 \item{focal.species}{The name of the focal species in the 
@@ -40,8 +40,6 @@ the column specifiy which community is which is called
 \code{exotic_species}, but this will be generalized later
 using an argument to specifiy which column marks community 
 separators and which column holds the actual species names}
-
-\item{log}{log transform the output?}
 }
 \value{
 A list with 4 components
@@ -49,7 +47,7 @@ A list with 4 components
 \item{\code{rare.mpd}}{Rarefied MPD value for the species in the community}
 \item{\code{sample.mpd}}{The values from each iteration of the sampling}
 \item{\code{rare.nnd}}{Rarefied NND values for the species in the community}
-\item{\code{sample.nnd}}{The values from each iteration of the sampling}#' 
+\item{\code{sample.nnd}}{The values from each iteration of the sampling} 
 }
 }
 \description{

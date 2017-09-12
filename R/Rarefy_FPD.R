@@ -22,14 +22,13 @@
 #' @param abundance.weighted A logical value indicating whether or not to 
 #' weight species by their relative abundances
 #' @inheritParams make_local_trait_dist
-#' @param log log transform the output?
 #' 
 #' @return A list with 4 components
 #' \itemize{
 #' \item{\code{rare.mpd}}{Rarefied MPD value for the species in the community}
 #' \item{\code{sample.mpd}}{The values from each iteration of the sampling}
 #' \item{\code{rare.nnd}}{Rarefied NND values for the species in the community}
-#' \item{\code{sample.nnd}}{The values from each iteration of the sampling}#' 
+#' \item{\code{sample.nnd}}{The values from each iteration of the sampling} 
 #' }
 #' 
 #'
@@ -42,8 +41,7 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
                        metric = c("MPD", "NND"),
                        n.resamp = 1000, n.rare, 
                        a, p, abundance.weighted = FALSE,
-                       community.data = NULL,
-                       log = TRUE) {
+                       community.data = NULL) {
 
   mpd.tf <- "MPD" %in% metric
   nnd.tf <- "NND" %in% metric
@@ -143,14 +141,6 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
   if(nnd.tf){
     out$rare.nnd <- mean(rare.bl)
     out$sample.nnds <- rare.bl
-  }
-  
-  if(log & length(metric) == 2) { 
-    out$rare.mpd <- log(out$rare.mpd)
-    out$rare.nnd <- log(out$rare.nnd)
-  } 
-  if(log & length(metric) == 1){
-    out[[1]] <- log(out[[1]])
   }
   return(out)
 
