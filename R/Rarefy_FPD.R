@@ -145,7 +145,11 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
     out$sample.nnds <- rare.bl
   }
   
-  if(log) { 
+  if(log & length(metric) == 2) { 
+    out$rare.mpd <- log(out$rare.mpd)
+    out$rare.nnd <- log(out$rare.nnd)
+  } 
+  if(log & length(metric) == 1){
     out[[1]] <- log(out[[1]])
   }
   return(out)
