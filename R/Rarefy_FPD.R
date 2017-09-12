@@ -22,6 +22,7 @@
 #' @param abundance.weighted A logical value indicating whether or not to 
 #' weight species by their relative abundances
 #' @inheritParams make_local_trait_dist
+#' @param log log transform the output?
 #' 
 #' @return A list with 4 components
 #' \itemize{
@@ -33,7 +34,6 @@
 #' 
 #'
 #' @author Sam Levin
-#' 
 #' @importFrom magrittr %>%
 #' @importFrom dplyr filter
 #' @export
@@ -42,8 +42,9 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
                        metric = c("MPD", "NND"),
                        n.resamp = 1000, n.rare, 
                        a, p, abundance.weighted = FALSE,
-                       community.data = NULL) {
-  
+                       community.data = NULL,
+                       log = TRUE) {
+
   mpd.tf <- "MPD" %in% metric
   nnd.tf <- "NND" %in% metric
   
@@ -101,10 +102,12 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
       if(!focal.pos %in% resamp.x){
         resamp.x <- c(resamp.x[-1], focal.pos)
       }
-      abundance.data <- dplyr::filter(community.data, 
-                                      exotic_species == focal.species) %>%
-                        .[.$community %in% rownames(fpd), ] %>% .[, 2:3]
-      
+      abundance.data <- community.data[ ,1:3] 
+      abundance.data <- dplyr::filter(abundance.data,
+                                      exotic_species == focal.species)
+      abundance.data <- abundance.data[abundance.data$community %in% rownames(fpd),
+                                       -1] 
+
       if(mpd.tf) {
         rare.mpd[i] <- AW_calc(focal.species,
                                abundance.data[resamp.x, ], 
@@ -115,9 +118,9 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
       if(nnd.tf){
         rare.bl[i] <- AW_calc(focal.species,
                               abundance.data[resamp.x, ], 
-                              fpd.mat = data.frame(fpd[resamp.x, resamp.x]), 
+                              fpd.mat = data.frame(focal.column[resamp.x]), 
                               metric = 'NND',
-                              na.rm = TRUE)
+                              na.rm = TRUE) 
       }
       
       
@@ -127,7 +130,7 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
         rare.mpd[i] <- mean(focal.column[resamp.x], na.rm = TRUE)
       }
       if(nnd.tf){
-        rare.bl[i] <- min(focal.column[resamp.x], na.rm = TRUE)
+        rare.bl[i] <- min(focal.column[resamp.x], na.rm = TRUE) 
       }
     }
   }
@@ -141,7 +144,10 @@ rarefy_FPD <- function(focal.species, phylo.mat, fun.mat,
     out$rare.nnd <- mean(rare.bl)
     out$sample.nnds <- rare.bl
   }
-
+  
+  if(log) { 
+    out[[1]] <- log(out[[1]])
+  }
   return(out)
 
 }

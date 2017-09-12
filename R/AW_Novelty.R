@@ -25,7 +25,7 @@ AW_calc <- function(focal.species, community.data, fpd.mat,
                     metric = c('NND', 'MPD'), na.rm = TRUE){
   
   focal.pos <- which(rownames(fpd.mat) == focal.species)
-  fpd.mat[focal.pos] <- 0
+  fpd.mat[focal.pos, 1] <- 0
   
   if(!identical(rownames(fpd.mat), community.data$community)){
     stop('The developer has made a mistake in AW_calc or
