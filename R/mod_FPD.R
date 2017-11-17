@@ -39,7 +39,7 @@ func_phy_dist <- function (FDist, PDist, phyloWeight, p, ...)
             'by matrix level mean values. Check data if this is problematic.')
   }
   
-  if(phyloWeight < 1){
+  if(phyloWeight < 1 & phyloWeight > 0){
     FDist <- FDist/max(FDist)
     PDist <- PDist/max(PDist)
   }
