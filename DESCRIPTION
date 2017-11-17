@@ -1,7 +1,7 @@
 Package: FunPhylo
 Type: Package
 Title: Helpers to Power the Fun Phylo Shiny App
-Version: 0.1.0
+Version: 1.0.0
 Author: Sam Levin [cre, aut]
 Maintainer: Sam Levin <levisc8@gmail.com>
 Description: A set of helper functions and data sets to power the 

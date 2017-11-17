@@ -32,6 +32,11 @@ for(i in 1:10){
 
 # test rarefying functions
 traits <- c('Height')
+communities <- tyson$communities
+demog <- demo.data
+phylo <- tyson$phylo
+trait.data <- tyson$traits
+traits <- names(tyson$traits)[c(2:4,6)]
 
 for(x in unique(demog$Species)){
   phylo.mat <- make_local_phylo_dist(x, communities, phylo)
@@ -41,7 +46,8 @@ for(x in unique(demog$Species)){
   
   FPD <- rarefy_FPD(x, phylo.mat = phylo.mat,
                     fun.mat = fun.mat,
-                    n.rare = 11, a = .5, p = 2)
+                    n.rare = 11, a = .5, p = 2,
+                    community.data = communities)
   
   demog[demog$Species == x, 'out'] <- as.numeric(FPD$rare.nnd)
   
