@@ -1,6 +1,5 @@
-# tests for server
 
-rm(list = ls(all = T))
+context('FunPhylo tests')
 #library(shiny)
 library(FunPhylo)
 #source('helpers.R')
@@ -15,43 +14,22 @@ trait.data <- tyson$traits
 
 traits <- names(trait.data[-1])
 # test trait ktab functions
-for(i in 1:10){
+test_that('KTabs are constructed correclty', {
   trait.test <- traits[base::sample(1:24,9)]
   
   for(x in unique(demog$Species)){
-    cat(x,"    ", i,'\n')
-    test.local <- make_local_traits_ktab(x, community.data = communities,
-                                         trait.data = trait.data, traits = traits)
+    test.local <- make_local_trait_ktab(x, community.data = communities,
+                                        trait.data = trait.data, traits = traits)
+    expect_true(any(grepl('Q|B|C', test.local$VarTypes)))
+    
   }
   
-  test.regional <- make_regional_traits_ktab(trait.data, traits)
+  test.regional <- make_regional_trait_ktab(trait.data, traits)
   
-  
-}
+  expect_equal(class(test.regional), 'list')
+  expect_true(all(grepl('Q|B|C', test.regional$VarTypes)))
 
-
-# test rarefying functions
-traits <- c('Height')
-communities <- tyson$communities
-demog <- demo.data
-phylo <- tyson$phylo
-trait.data <- tyson$traits
-traits <- names(tyson$traits)[c(2:4,6)]
-
-for(x in unique(demog$Species)){
-  phylo.mat <- make_local_phylo_dist(x, communities, phylo)
-  fun.mat <- FunPhylo:::make_local_trait_dist(x, communities, trait.data,
-                                              traits = traits,
-                                              scale = 'scaledBYrange')
-  
-  FPD <- rarefy_FPD(x, phylo.mat = phylo.mat,
-                    fun.mat = fun.mat,
-                    n.rare = 11, a = .5, p = 2,
-                    community.data = communities)
-  
-  demog[demog$Species == x, 'out'] <- as.numeric(FPD$rare.nnd)
-  
-}
+})
 
 
 
