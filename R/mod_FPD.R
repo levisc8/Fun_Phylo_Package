@@ -11,7 +11,7 @@
 #' information. The value must be between 0 and 1. 
 #' @param p the power to raise each matrix to when combining the two 
 #' distance matrices. 
-#' @param ... Ignored here
+#' @param ... Ignored here 
 #' 
 #' @return A matrix with weighted interspecific distances
 #' 
