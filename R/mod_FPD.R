@@ -2,7 +2,7 @@
 #' 
 #' @description Calculate hybrid functional phylogenetic distance matrices
 #' based on the method of Cadotte et al 2013
-#' 
+#'
 #' @param FDist A matrix of functional trait distances
 #' @param PDist A matrix of phylogenetic distances
 #' @param phyloWeight The phylogenetic scaling parameter \emph{a} as
