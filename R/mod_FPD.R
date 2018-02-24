@@ -1,4 +1,5 @@
 #' @title Functional-Phylogenetic Distances (FPD)
+#' 
 #' @description Calculate hybrid functional phylogenetic distance matrices
 #' based on the method of Cadotte et al 2013
 #' 
