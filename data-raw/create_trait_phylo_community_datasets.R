@@ -275,7 +275,7 @@ unique(communities$community)[! unique(communities$community) %in% TyPhy$tip.lab
 # due to it being a monocot
 
 tyson$communities <- communities
-tyson$traits <- SummaryData
+tyson$traits <- FinalTraitData
 tyson$phylo <- TyPhy
 tyson$spp.list <- spp_list
 
