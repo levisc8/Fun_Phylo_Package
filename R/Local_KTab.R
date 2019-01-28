@@ -75,10 +75,10 @@ make_local_trait_ktab <- function(focal.species,community.data,
                              exotic_species == focal.species) %>%
     .$community
 
-  local.com <- trait.data[trait.data$Woody == wood &
+  local.com <- trait.data[trait.data$Woody == wood$Woody &
                             trait.data$Species.Name %in% whole.com, ]
 
-  if(wood == 0){
+  if(wood$Woody == 0){
     ContNames <- HerbTraitNames[HerbTraitNames %in% traits]
   } else {
     ContNames <- WoodyTraitNames[WoodyTraitNames %in% traits]
