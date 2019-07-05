@@ -81,8 +81,9 @@ SummaryData <- SummaryData1 <- RawTraits %>%
 names(SummaryData)[names(SummaryData) == "LeafType"] <- "Evergreen"
 names(SummaryData)[names(SummaryData) == "GF1"] <- "Woody"
 
-TankTree <- read.tree('C:/Users/sl13sise/Dropbox/MLU/Frequent_Data/PhytoPhylo.tre')
-
+TankTree <- read.tree('C:/Users/sl13sise/Dropbox/MLU/Frequent_Data/Phylogenies/PhytoPhylo.tre')
+AllOtbTree <- read.tree('C:/Users/sl13sise/Dropbox/MLU/Frequent_Data/Phylogenies/ALLOTB.tre')
+GbOtbTree <- read.tree('C:/Users/sl13sise/Dropbox/MLU/Frequent_Data/Phylogenies/GBOTB.tre')
 
 # Some species had height info collected incorrectly. For example, Carduus nutans
 # height info was collected as height of the flowering stem, so it averaged ~120cm.
@@ -262,6 +263,16 @@ FullTree <- congeneric.merge(TankTree, spp_list$Species)
 
 TyPhy <- drop.tip(FullTree, setdiff(FullTree$tip.label, spp_list$Species))
 
+# ALLOTB Tree
+FullTree <- congeneric.merge(AllOtbTree, spp_list$Species)
+
+allPhy <- drop.tip(FullTree, setdiff(FullTree$tip.label, spp_list$Species))
+
+# GBOTB Tree
+FullTree <- congeneric.merge(GbOtbTree, spp_list$Species)
+
+gbPhy <- drop.tip(FullTree, setdiff(FullTree$tip.label, spp_list$Species))
+
 # rm(FullTree, TankTree)
 
 # Done with the phylogeny!
@@ -270,6 +281,8 @@ TyPhy <- drop.tip(FullTree, setdiff(FullTree$tip.label, spp_list$Species))
 
 # Check to see how many are missing from TyPhy
 unique(communities$community)[! unique(communities$community) %in% TyPhy$tip.label]
+unique(communities$community)[! unique(communities$community) %in% allPhy$tip.label]
+unique(communities$community)[! unique(communities$community) %in% gbPhy$tip.label]
 
 # Allium is the only one missing :) This should be true, as we removed it 
 # due to it being a monocot
@@ -278,6 +291,9 @@ tyson$communities <- communities
 tyson$traits <- FinalTraitData
 tyson$phylo <- TyPhy
 tyson$spp.list <- spp_list
+
+tyson$phylo_all <- allPhy
+tyson$phylo_gb <- gbPhy
 
 usethis::use_data(tyson,
                   overwrite = TRUE)
