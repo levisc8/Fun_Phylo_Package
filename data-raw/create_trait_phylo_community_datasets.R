@@ -200,7 +200,6 @@ FinalData <- SummaryData[ , !names(SummaryData) %in% RmNames] %>%
 RmSpp <- c('Allium_vineale', 'Euphorbia_maculata', 'Stenaria_nigricans')
 
 FinalTraitData <- FinalData[!FinalData$Species.Name %in% RmSpp, ]
-FinalTraitData$N_Fixer <- ifelse(FinalTraitData$N_Fixer == 'N_Fixer', 1, 0)
 
 # Next, TRC species list. This will get used for making the phylogeny
 
