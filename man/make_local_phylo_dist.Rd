@@ -4,7 +4,8 @@
 \alias{make_local_phylo_dist}
 \title{Make Local Scale Phylogenetic Distance Matrix}
 \usage{
-make_local_phylo_dist(focal.species, community.data, phylo)
+make_local_phylo_dist(focal.species, community.data, phylo,
+  square_root = TRUE)
 }
 \arguments{
 \item{focal.species}{The focal species or plot identifier that
@@ -19,6 +20,8 @@ separators and which column holds the actual species names}
 
 \item{phylo}{A larger phylogeny that contains all of the 
 species in the \code{community.data} file.}
+
+\item{square_root}{Square root transform branch lengths in distance matrix?}
 }
 \value{
 A phylogenetic distance matrix in the form of a

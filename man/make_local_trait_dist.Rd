@@ -4,7 +4,8 @@
 \alias{make_local_trait_dist}
 \title{Make a functional trait distance matrix}
 \usage{
-make_local_trait_dist(focal.species, community.data, trait.data, traits, scale)
+make_local_trait_dist(focal.species, community.data, trait.data, traits,
+  scale)
 }
 \arguments{
 \item{focal.species}{The focal species or plot identifier that

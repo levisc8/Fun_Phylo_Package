@@ -4,7 +4,7 @@
 \alias{make_regional_phylo_dist}
 \title{Make a species pool-level phylogenetic distance matrix}
 \usage{
-make_regional_phylo_dist(spp.vector, phylo)
+make_regional_phylo_dist(spp.vector, phylo, square_root = TRUE)
 }
 \arguments{
 \item{spp.vector}{A character vector of species names. Species names
@@ -14,6 +14,8 @@ must match those in phylogeny.}
 species in the \code{spp.vector}. If this condition is not met,
 the function will try to merge in the missing species using
 \code{pez::congeneric.merge} while warning the user.}
+
+\item{square_root}{Square root transform branch lengths in distance matrix?}
 }
 \value{
 A phylogenetic distance matrix in the form of a

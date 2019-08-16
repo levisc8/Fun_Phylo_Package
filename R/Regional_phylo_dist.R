@@ -9,6 +9,7 @@
 #' species in the \code{spp.vector}. If this condition is not met,
 #' the function will try to merge in the missing species using
 #' \code{pez::congeneric.merge} while warning the user. 
+#' @param square_root Square root transform branch lengths in distance matrix?
 #' 
 #' @return A phylogenetic distance matrix in the form of a
 #' \code{data.frame}
@@ -20,7 +21,8 @@
 #' @importFrom pez congeneric.merge
 #' @export
 
-make_regional_phylo_dist <- function(spp.vector, phylo){
+make_regional_phylo_dist <- function(spp.vector, phylo, square_root = TRUE) {
+  
   spp.vector <- gsub("-","\\.",spp.vector)
   
   if(!all(spp.vector %in% phylo$tip.label)){
@@ -30,7 +32,11 @@ make_regional_phylo_dist <- function(spp.vector, phylo){
   }
   
   phylo <- ape::drop.tip(phylo, setdiff(phylo$tip.label, spp.vector))
-  bigDist <- ape::cophenetic.phylo(phylo) %>% data.frame()
+  bigDist <- ape::cophenetic.phylo(phylo) 
+  
+  if(square_root) {
+    bigDist <- sqrt(bigDist)
+  }
   
   out <- bigDist[rownames(bigDist) %in% spp.vector, 
                  names(bigDist) %in% spp.vector]

@@ -13,6 +13,7 @@
 #' separators and which column holds the actual species names
 #' @param phylo A larger phylogeny that contains all of the 
 #' species in the \code{community.data} file. 
+#' @param square_root Square root transform branch lengths in distance matrix?
 #' 
 #' @return A phylogenetic distance matrix in the form of a
 #' \code{data.frame}
@@ -26,13 +27,19 @@
 #' @export
 
 make_local_phylo_dist <- function(focal.species, community.data,
-                                  phylo){
+                                  phylo, square_root = TRUE){
   local.com <- dplyr::filter(community.data,
                              exotic_species == focal.species) %>%
     .$community %>% as.character()
   
   out <- ape::drop.tip(phylo, setdiff(phylo$tip.label, local.com)) %>%
-    ape::cophenetic.phylo() %>% data.frame()
+    ape::cophenetic.phylo() 
+  
+  if(square_root) {
+    out <- sqrt(out)
+  }
+  
+  out <- data.frame(out)
   
   return(out)
   
