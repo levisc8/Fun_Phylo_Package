@@ -49,8 +49,8 @@
 make_local_trait_ktab <- function(focal.species,community.data,
                                    trait.data, traits){
 
-  WoodyTraitNames <- c('SLA','Tough','WoodDens')
-  HerbTraitNames <- c("Height","SLA","Tough")
+  WoodyTraitNames <- c("Height", 'SLA', 'Tough', 'WoodDens')
+  HerbTraitNames <- c("Height", "SLA", "Tough")
 
   GrowthForm <- c("Stemmed_Herb",
                   "Tree", "Rosette",
