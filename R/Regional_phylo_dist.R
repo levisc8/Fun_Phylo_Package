@@ -37,13 +37,10 @@ make_regional_phylo_dist <- function(spp.vector, phylo, square_root = TRUE) {
   if(square_root) {
     bigDist <- sqrt(bigDist)
   }
-  
-  out <- bigDist[rownames(bigDist) %in% spp.vector, 
-                 names(bigDist) %in% spp.vector]
-  
-  if(dim(out)[1] != dim(out)[2]){
+
+  if(dim(bigDist)[1] != dim(bigDist)[2]){
     stop('resulting matrix is not square')
   }
   
-  return(out)
+  return(bigDist)
 }
