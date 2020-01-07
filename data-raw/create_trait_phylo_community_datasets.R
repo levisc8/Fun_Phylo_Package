@@ -294,5 +294,22 @@ tyson$spp.list <- spp_list
 tyson$phylo_all <- allPhy
 tyson$phylo_gb <- gbPhy
 
+write.csv(tyson$communities,
+          file = 'data-raw/communities.csv',
+          row.names = FALSE)
+write.csv(tyson$traits,
+          file = 'data-raw/traits.csv',
+          row.names = FALSE)
+write.csv(tyson$spp.list,
+          file = 'data-raw/trc_spp_list.csv',
+          row.names = FALSE)
+
+write.tree(tyson$phylo,
+          file = 'data-raw/tank_phylo.tre')
+write.tree(tyson$phylo_gb,
+          file = 'data-raw/gb_phylo.tre')
+write.tree(tyson$phylo_all,
+          file = 'data-raw/all_phylo.tre')
+
 usethis::use_data(tyson,
                   overwrite = TRUE)
