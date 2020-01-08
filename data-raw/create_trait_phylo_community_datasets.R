@@ -223,38 +223,44 @@ spp_list$Species[spp_list$Species == 'Psoralidium_tenuiflorum'] <- 'Psoralea_ten
 
 # Next, add in species in community data that are missing from the complete species
 # list.
+# 
+# communities <- read.csv("C:/Users/sl13sise/Dropbox/Thesis_SL/Data/Branch.length.data.csv",
+#                         stringsAsFactors = FALSE)
+# 
+# # convert -'s to periods, and make sure there is no leading or trailing
+# # whitespace in the species names
+# communities$exotic_species <- gsub(" ", "_", communities$exotic_species)
+# communities$community <- gsub('\\.', ' ', communities$community)
+# communities$community <- trimws(communities$community)
+# communities$community <- gsub('-', '\\.', communities$community)
+# communities$community <- gsub(' ', '_', communities$community)
+# 
+# # finally, correct the _sp to spp for consistency's sake
+# communities$community <- gsub('_sp$', '_spp', communities$community)
+# 
+# to_add <- communities[!communities$community %in% spp_list$Species, ] %>%
+#   .[!duplicated(.$community), ] %>%
+#   select(community, alien, Invasive) %>%
+#   setNames(
+#     c(
+#       'Species',
+#       'Exotic',
+#       'Invasive'
+#     )
+#   ) %>%
+#   mutate(Monocot = 0) %>%
+#   filter(Species != 'Allium_vineale')
+# 
+# # Finally, add Cerastium spp. so it'll match the trait data.
+# cer_spp <- data.frame(Species = 'Cerastium_spp.', Exotic = NA, Invasive = NA, Monocot = 0)
 
-communities <- read.csv("C:/Users/sl13sise/Dropbox/Thesis_SL/Data/Branch.length.data.csv",
-                        stringsAsFactors = FALSE)
+# spp_list <- rbind(spp_list, cer_spp, to_add)
 
-# convert -'s to periods, and make sure there is no leading or trailing
-# whitespace in the species names
-communities$exotic_species <- gsub(" ", "_", communities$exotic_species)
-communities$community <- gsub('\\.', ' ', communities$community)
-communities$community <- trimws(communities$community)
-communities$community <- gsub('-', '\\.', communities$community)
-communities$community <- gsub(' ', '_', communities$community)
+# Code retained to show how spp list is created, but using the saved version that
+# also includes habitat info for every species for use in revision round 3
 
-# finally, correct the _sp to spp for consistency's sake
-communities$community <- gsub('_sp$', '_spp', communities$community)
-
-to_add <- communities[!communities$community %in% spp_list$Species, ] %>%
-  .[!duplicated(.$community), ] %>%
-  select(community, alien, Invasive) %>%
-  setNames(
-    c(
-      'Species',
-      'Exotic',
-      'Invasive'
-    )
-  ) %>%
-  mutate(Monocot = 0) %>%
-  filter(Species != 'Allium_vineale')
-
-# Finally, add Cerastium spp. so it'll match the trait data.
-cer_spp <- data.frame(Species = 'Cerastium_spp.', Exotic = NA, Invasive = NA, Monocot = 0)
-
-spp_list <- rbind(spp_list, cer_spp, to_add)
+spp_list <- read.csv('data-raw/trc_spp_list.csv',
+                     stringsAsFactors = FALSE)
 
 # Done w/ species list! Now time for the phylogeny
 
@@ -276,15 +282,123 @@ gbPhy <- drop.tip(FullTree, setdiff(FullTree$tip.label, spp_list$Species))
 
 # Done with the phylogeny!
 
-# Now, fix the names in each community data set
-
 # Check to see how many are missing from TyPhy
 unique(communities$community)[! unique(communities$community) %in% TyPhy$tip.label]
 unique(communities$community)[! unique(communities$community) %in% allPhy$tip.label]
 unique(communities$community)[! unique(communities$community) %in% gbPhy$tip.label]
 
 # Allium is the only one missing :) This should be true, as we removed it 
-# due to it being a monocot
+# due to it being a monocot.
+
+# GBOTB is missing quite a few, though that is using the GenBank sequences which
+# aren't as complete as the others.
+
+# Next, check to make sure everything in community habitats is in
+# the spp_list
+
+communities <- tyson$communities
+
+temp <- communities %>% 
+  select(exotic_species, community) %>% 
+  mutate(Habitat = NA_character_)
+
+demo.data <- tyson$demo.data %>% 
+  select(Species, Habitat) %>%
+  rbind(
+    data.frame(
+      Species = c("Desmodium_perplexum", 
+                  "Geum_vernum",
+                  "Symphoricarpos_orbiculatus",
+                  "Teucrium_canadense"),
+      Habitat = c("Grass",
+                  "Forest",
+                  'Forest',
+                  "Forest")
+    )
+  )
+
+# create habitat column for community data based on designations from 
+# focal species
+
+for(i in seq_len(dim(temp)[1])) {
+  
+  foc_spp         <- temp$exotic_species[i]
+  
+  temp$Habitat[i] <- demo.data$Habitat[demo.data$Species == foc_spp]
+  
+}
+
+# Next, make sure that each occurrence in the community data was found in the 
+# internet search that created the habitat column for the spp_list. If not,
+# then we append the missing habitat designation to the ones from the internet
+# search
+
+for(i in seq_len(dim(spp_list)[1])) {
+  
+  test_spp <- spp_list$Species[i]
+  test_hab <- spp_list$Habitat[i]
+  
+  if(!is.na(test_hab)) {
+    
+    test_com <- filter(temp, community == test_spp)
+    obs_hab  <- unique(test_com$Habitat)
+    
+    test_ind <- vapply(obs_hab,
+                       function(x, test_hab) {
+                         grepl(x, test_hab)
+                       },
+                       test_hab = test_hab,
+                       FUN.VALUE = logical(1L))
+    
+    if(!all(test_ind) & dim(test_com)[1] > 0 ) {
+      
+        test_hab <- paste(test_hab, 
+                          paste(obs_hab[!test_ind], 
+                                collapse = '; '),
+                          sep = '; ')
+        
+      
+    }
+    
+  }
+  
+  spp_list$Habitat[i] <- test_hab
+  
+}
+# Now, check habitat designations in trc_spp_list
+
+summary(as.factor(spp_list$Habitat))
+
+spp_list$Habitat <- gsub('Grass; Quarry; Forest', 
+                         "Grass; Forest; Quarry",
+                         spp_list$Habitat)
+spp_list$Habitat <- gsub('Forest; Grass; Quarry', 
+                         "Grass; Forest; Quarry",
+                         spp_list$Habitat)
+spp_list$Habitat <- gsub('Forest; Quarry; Grass', 
+                         "Grass; Forest; Quarry",
+                         spp_list$Habitat)
+spp_list$Habitat <- gsub('Quarry; Forest', 
+                         "Forest; Quarry",
+                         spp_list$Habitat)
+spp_list$Habitat <- gsub('Forest; Grass', 
+                         "Grass; Forest",
+                         spp_list$Habitat)
+
+spp_list$Habitat <- gsub('^; Forest$',
+                         "Forest",
+                         spp_list$Habitat)
+spp_list$Habitat <- gsub('^; Quarry$',
+                         "Quarry",
+                         spp_list$Habitat)
+spp_list$Habitat <- gsub('^; Grass; Forest$',
+                         "Grass; Forest",
+                         spp_list$Habitat)
+
+
+
+summary(as.factor(spp_list$Habitat))
+
 
 tyson$communities <- communities
 tyson$traits <- FinalTraitData
@@ -293,23 +407,23 @@ tyson$spp.list <- spp_list
 
 tyson$phylo_all <- allPhy
 tyson$phylo_gb <- gbPhy
-
-write.csv(tyson$communities,
-          file = 'data-raw/communities.csv',
-          row.names = FALSE)
-write.csv(tyson$traits,
-          file = 'data-raw/traits.csv',
-          row.names = FALSE)
-write.csv(tyson$spp.list,
-          file = 'data-raw/trc_spp_list.csv',
-          row.names = FALSE)
-
-write.tree(tyson$phylo,
-          file = 'data-raw/tank_phylo.tre')
-write.tree(tyson$phylo_gb,
-          file = 'data-raw/gb_phylo.tre')
-write.tree(tyson$phylo_all,
-          file = 'data-raw/all_phylo.tre')
+# 
+# write.csv(tyson$communities,
+#           file = 'data-raw/communities.csv',
+#           row.names = FALSE)
+# write.csv(tyson$traits,
+#           file = 'data-raw/traits.csv',
+#           row.names = FALSE)
+# write.csv(tyson$spp.list,
+#           file = 'data-raw/trc_spp_list.csv',
+#           row.names = FALSE)
+# 
+# write.tree(tyson$phylo,
+#           file = 'data-raw/tank_phylo.tre')
+# write.tree(tyson$phylo_gb,
+#           file = 'data-raw/gb_phylo.tre')
+# write.tree(tyson$phylo_all,
+#           file = 'data-raw/all_phylo.tre')
 
 usethis::use_data(tyson,
                   overwrite = TRUE)
