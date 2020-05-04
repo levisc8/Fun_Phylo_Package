@@ -197,15 +197,14 @@ FinalData <- SummaryData[ , !names(SummaryData) %in% RmNames] %>%
 # calculation (I think). Additionally, Allium vineale is a monocot, so I am removing
 # that as well
 
-RmSpp <- c('Allium_vineale', 'Euphorbia_maculata', 'Stenaria_nigricans')
+RmSpp <- c('Euphorbia_maculata', 'Stenaria_nigricans')
 
 FinalTraitData <- FinalData[!FinalData$Species.Name %in% RmSpp, ]
 
 # Next, TRC species list. This will get used for making the phylogeny
 
 spp_list <- read.csv("C:/Users/sl13sise/Dropbox/Thesis_SL/Data/Complete Tyson Flora List w_o Grasses_Sedges.csv",
-                     stringsAsFactors = FALSE) %>%
-  filter(Monocot != 1)
+                     stringsAsFactors = FALSE) 
 
 # trim whitespaces from ends and make sure anything w/ 2 spaces only has one.
 # then replace spaces w/ underscores. Finally, replace dashes w/ periods
@@ -223,46 +222,54 @@ spp_list$Species[spp_list$Species == 'Psoralidium_tenuiflorum'] <- 'Psoralea_ten
 
 # Next, add in species in community data that are missing from the complete species
 # list.
-# 
-# communities <- read.csv("C:/Users/sl13sise/Dropbox/Thesis_SL/Data/Branch.length.data.csv",
-#                         stringsAsFactors = FALSE)
-# 
+
+communities <- read.csv("C:/Users/sl13sise/Dropbox/Thesis_SL/Data/Branch.length.data.csv",
+                        stringsAsFactors = FALSE)
+
 # # convert -'s to periods, and make sure there is no leading or trailing
 # # whitespace in the species names
-# communities$exotic_species <- gsub(" ", "_", communities$exotic_species)
-# communities$community <- gsub('\\.', ' ', communities$community)
-# communities$community <- trimws(communities$community)
-# communities$community <- gsub('-', '\\.', communities$community)
-# communities$community <- gsub(' ', '_', communities$community)
-# 
-# # finally, correct the _sp to spp for consistency's sake
-# communities$community <- gsub('_sp$', '_spp', communities$community)
-# 
-# to_add <- communities[!communities$community %in% spp_list$Species, ] %>%
-#   .[!duplicated(.$community), ] %>%
-#   select(community, alien, Invasive) %>%
-#   setNames(
-#     c(
-#       'Species',
-#       'Exotic',
-#       'Invasive'
-#     )
-#   ) %>%
-#   mutate(Monocot = 0) %>%
-#   filter(Species != 'Allium_vineale')
-# 
-# # Finally, add Cerastium spp. so it'll match the trait data.
-# cer_spp <- data.frame(Species = 'Cerastium_spp.', Exotic = NA, Invasive = NA, Monocot = 0)
+communities$exotic_species <- gsub(" ", "_", communities$exotic_species)
+communities$community <- gsub('\\.', ' ', communities$community)
+communities$community <- trimws(communities$community)
+communities$community <- gsub('-', '\\.', communities$community)
+communities$community <- gsub(' ', '_', communities$community)
 
-# spp_list <- rbind(spp_list, cer_spp, to_add)
+# # finally, correct the _sp to spp for consistency's sake
+communities$community <- gsub('_sp$', '_spp', communities$community)
+# 
+to_add <- communities[!communities$community %in% spp_list$Species, ] %>%
+  .[!duplicated(.$community), ] %>%
+  select(community, alien, Invasive) %>%
+  setNames(
+    c(
+      'Species',
+      'Exotic',
+      'Invasive'
+    )
+  ) %>%
+  mutate(Monocot = 0)
+
+# # Finally, add Cerastium spp. so it'll match the trait data.
+cer_spp <- data.frame(Species = 'Cerastium_spp.', Exotic = NA, Invasive = NA, Monocot = 0)
+
+spp_list <- rbind(spp_list, cer_spp, to_add)
+
 
 # Code retained to show how spp list is created, but using the saved version that
 # also includes habitat info for every species for use in revision round 3
 
-spp_list <- read.csv('data-raw/trc_spp_list.csv',
-                     stringsAsFactors = FALSE)
+hab_data <- read.csv('data-raw/trc_spp_list.csv',
+                     stringsAsFactors = FALSE) %>%
+  select(Species, Habitat)
+
+spp_list <- left_join(spp_list, hab_data, by = "Species")
+
+write.csv(spp_list, file = "data-raw/trc_spp_list.csv", row.names = FALSE)
 
 # Done w/ species list! Now time for the phylogeny
+
+spp_list <- read.csv("data-raw/trc_spp_list.csv",
+                     stringsAsFactors = FALSE)
 
 FullTree <- congeneric.merge(TankTree, spp_list$Species)
 
@@ -287,8 +294,7 @@ unique(communities$community)[! unique(communities$community) %in% TyPhy$tip.lab
 unique(communities$community)[! unique(communities$community) %in% allPhy$tip.label]
 unique(communities$community)[! unique(communities$community) %in% gbPhy$tip.label]
 
-# Allium is the only one missing :) This should be true, as we removed it 
-# due to it being a monocot.
+# Tank tree is good :)
 
 # GBOTB is missing quite a few, though that is using the GenBank sequences which
 # aren't as complete as the others.
@@ -296,7 +302,8 @@ unique(communities$community)[! unique(communities$community) %in% gbPhy$tip.lab
 # Next, check to make sure everything in community habitats is in
 # the spp_list
 
-communities <- tyson$communities
+# communities <- tyson$communities
+spp_list$Habitat[spp_list$Habitat == ""] <- NA_character_
 
 temp <- communities %>% 
   select(exotic_species, community) %>% 
@@ -358,13 +365,30 @@ for(i in seq_len(dim(spp_list)[1])) {
                           sep = '; ')
         
       
-    }
+    } 
     
+  } else {
+
+    # Find the community it occured in (if it did) and use those for the species
+    # habitats
+
+    foc_spp <- communities$exotic_species[communities$community == test_spp] %>%
+      unique()
+
+    obs_hab <- demo.data$Habitat[demo.data$Species %in% foc_spp] %>%
+      unique()
+
+    if(length(obs_hab) > 0) {
+      test_hab <- paste(obs_hab, collapse = "; ")
+    } else {
+      test_hab <- NA_character_
+    }
   }
   
   spp_list$Habitat[i] <- test_hab
   
 }
+
 # Now, check habitat designations in trc_spp_list
 
 summary(as.factor(spp_list$Habitat))
@@ -399,6 +423,10 @@ spp_list$Habitat <- gsub('^; Grass; Forest$',
 
 summary(as.factor(spp_list$Habitat))
 
+# The duplicated entries are Carya, fraxinus, and oxalis_spp. I don't really
+# know how these got duplicated, but we can drop them safely now.
+
+spp_list <- spp_list[!duplicated(spp_list$Species), ]
 
 tyson$communities <- communities
 tyson$traits <- FinalTraitData
@@ -407,23 +435,23 @@ tyson$spp.list <- spp_list
 
 tyson$phylo_all <- allPhy
 tyson$phylo_gb <- gbPhy
-# 
-# write.csv(tyson$communities,
-#           file = 'data-raw/communities.csv',
-#           row.names = FALSE)
-# write.csv(tyson$traits,
-#           file = 'data-raw/traits.csv',
-#           row.names = FALSE)
-# write.csv(tyson$spp.list,
-#           file = 'data-raw/trc_spp_list.csv',
-#           row.names = FALSE)
-# 
-# write.tree(tyson$phylo,
-#           file = 'data-raw/tank_phylo.tre')
-# write.tree(tyson$phylo_gb,
-#           file = 'data-raw/gb_phylo.tre')
-# write.tree(tyson$phylo_all,
-#           file = 'data-raw/all_phylo.tre')
+
+write.csv(tyson$communities,
+          file = 'data-raw/communities.csv',
+          row.names = FALSE)
+write.csv(tyson$traits,
+          file = 'data-raw/traits.csv',
+          row.names = FALSE)
+write.csv(tyson$spp.list,
+          file = 'data-raw/trc_spp_list.csv',
+          row.names = FALSE)
+
+write.tree(tyson$phylo,
+          file = 'data-raw/tank_phylo.tre')
+write.tree(tyson$phylo_gb,
+          file = 'data-raw/gb_phylo.tre')
+write.tree(tyson$phylo_all,
+          file = 'data-raw/all_phylo.tre')
 
 usethis::use_data(tyson,
                   overwrite = TRUE)
